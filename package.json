@@ -16,6 +16,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "ai": "^6.0.177",
     "pdf2json": "^4.0.3"
   }
 }
