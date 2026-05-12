@@ -1,0 +1,21 @@
+{
+  "devDependencies": {
+    "@types/node": "^25.7.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  },
+  "name": "src",
+  "version": "1.0.0",
+  "description": "OFICJALNE Repo MLowe dla testownika",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pdf2json": "^4.0.3"
+  }
+}
