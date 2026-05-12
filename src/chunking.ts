@@ -8,9 +8,7 @@ export async function chunkPdf(text: string) {
       .replace(/\n{3,}/g, "\n\n")
       .trim();
 
-  const splitBlocks = (
-    t: string, // podział na bloki (akapit, krótki akapit)
-  ) =>
+  const splitBlocks = (t: string) =>
     t
       .split(/\n\n+/)
       .map((b) => b.trim())
