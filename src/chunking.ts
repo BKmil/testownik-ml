@@ -20,8 +20,12 @@ export async function chunkPdf(text: string) {
 
   const detectType = (block: string): BlockType => {
     // heurystyka do wykrywania typu bloku
-    if (/^Definicja|Definition/i.test(block)) return "definition";
-    if (/^\d+[\.\)]\s/.test(block)) return "list";
+    if (
+      /^(definicja|definition)\b/i.test(block) ||
+      /^oznacza/i.test(block) ||
+      /jest to/i.test(block)
+    )
+      if (/^\d+[\.\)]\s/.test(block)) return "list";
     if (block.length < 80) return "title";
     return "paragraph";
   };
