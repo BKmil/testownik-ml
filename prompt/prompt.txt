@@ -8,7 +8,7 @@ OUTPUT RULES (VERY IMPORTANT):
 - Do NOT add any commentary.
 - Do NOT add any extra fields outside the schema.
 - Root object MUST contain ONLY:
-  title, description, version, questions
+  questions
 
 LANGUAGE RULE:
 - All text content MUST be in Polish.
@@ -55,7 +55,6 @@ STRICT VALIDATION RULES:
 - No additional properties anywhere in JSON.
 - No arrays wrapping the root object.
 - No null fields unless explicitly required.
-- No duplicate ids.
 - Orders must be sequential and correct.
 - Must be valid JSON.
 
