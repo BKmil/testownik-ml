@@ -4,9 +4,6 @@ import { z } from "zod";
 import { getPrompt } from "./getPrompt";
 
 const QuizSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  version: z.number(),
   questions: z.array(
     z.object({
       id: z.string(),
