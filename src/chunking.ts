@@ -1,50 +1,71 @@
-export async function chunkPdf(text: string) {
-  const normalize = (
-    t: string, // normalizacja
-  ) =>
-    t
-      .replace(/\r/g, "")
-      .replace(/[ \t]+/g, " ")
-      .replace(/\n{3,}/g, "\n\n")
-      .trim();
+import { encoding_for_model } from "tiktoken";
 
-  const splitBlocks = (t: string) =>
-    t
-      .split(/\n\n+/)
-      .map((b) => b.trim())
-      .filter(Boolean);
+// tokenizer
+const enc = encoding_for_model("gpt-4o-mini");
 
-  const semanticChunking = (blocks: string[], maxChars = 1500) => {
-    const chunks: { text: string }[] = [];
+// liczenie tokenow
+const countTokens = (t: string) => enc.encode(t).length;
 
-    let current = "";
+// ograniczenia i parametry chunkowania
+const MAX_TOKENS = 750; //
+const SLICE_TOKENS = 600; //
+const OVERLAP_BLOCKS = 1; //
 
-    for (const block of blocks) {
-      const candidate = current ? current + "\n\n" + block : block;
+export function chunkByTokens(blocks: string[]) {
+  const chunks: { text: string }[] = [];
 
-      if (candidate.length > maxChars && current) {
-        chunks.push({
-          text: current.trim(),
-        });
+  // obecny chunk
+  let current: string[] = [];
+  let currentTokens = 0;
 
-        current = block;
-      } else {
-        current = candidate;
+  for (const block of blocks) {
+    const tokens = countTokens(block);
+
+    // jeśli blok za duży, podzial na mniejsze kawalki
+    if (tokens > MAX_TOKENS) {
+      const encoded = enc.encode(block);
+
+      for (let i = 0; i < encoded.length; i += SLICE_TOKENS) {
+        const slice = encoded.slice(i, i + SLICE_TOKENS);
+
+        const text = enc.decode(slice);
+
+        chunks.push({ text: new TextDecoder().decode(text) });
       }
+
+      continue;
     }
 
-    if (current.trim()) {
+    // jesli limit przekroczony, przechodzimy do nowego chunku
+    if (currentTokens + tokens > MAX_TOKENS) {
       chunks.push({
-        text: current.trim(),
+        text: current.join("\n\n"), // laczenie blokow w chunku
       });
+
+      // ostatni blok dalej dla kontekstu
+      const overlap = current.slice(-OVERLAP_BLOCKS);
+
+      current = [...overlap, block];
+      currentTokens =
+        overlap.reduce((sum, b) => sum + countTokens(b), 0) + tokens;
+    } else {
+      // dodajemy blok do obecnego chunku
+      current.push(block);
+      currentTokens += tokens;
     }
+  }
 
-    return chunks;
-  };
-
-  const clean = normalize(text);
-  const blocks = splitBlocks(clean);
-  const chunks = semanticChunking(blocks);
+  // dodajemy ostatni chunk
+  if (current.length) {
+    chunks.push({
+      text: current.join("\n\n"),
+    });
+  }
 
   return chunks;
 }
+
+// cleanup
+process.on("exit", () => {
+  enc.free();
+});
