@@ -24,8 +24,6 @@ CONTENT RULES:
 
 QUESTION RULES:
 - Each question must have:
-  - id (leave empty string)
-  - order (starting from 1)
   - text (Polish)
   - explanation (Polish, can be empty string if not available)
   - multiple (boolean)
@@ -34,8 +32,6 @@ QUESTION RULES:
 
 ANSWER RULES:
 - Each answer must have:
-  - id (leave empty string)
-  - order (starting from 1)
   - text (Polish)
   - is_correct (boolean)
 - At least one answer must be correct.
