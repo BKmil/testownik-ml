@@ -24,27 +24,36 @@ CONTENT RULES:
 
 QUESTION RULES:
 - Each question must have:
-  - id (UUID v4)
+  - id (leave empty string)
   - order (starting from 1)
   - text (Polish)
   - explanation (Polish, can be empty string if not available)
   - multiple (boolean)
   - answers (array of 2–5 answers)
+  - avoid too obvious questions
 
 ANSWER RULES:
 - Each answer must have:
-  - id (UUID v4)
+  - id (leave empty string)
   - order (starting from 1)
   - text (Polish)
   - is_correct (boolean)
 - At least one answer must be correct.
 - If multiple = false → exactly one correct answer.
 - If multiple = true → multiple correct answers allowed.
+- Answers should be based directly on the given data.
+- Prefer questions that require explanation or understanding rather than selection based on wording logic.
+- Every incorrect answer must be a plausible misconception, not a denial of reality.
+- If removing the word "only" changes the meaning of the question significantly, do not generate the question.
+
+RULES FOR ANSWERS WHEN multiple = true:
+- At least one answer must be incorrect.
+- Avoid questions with the logic of key word ONLY.
 
 DIFFICULTY GUIDE:
-- easy → basic recall questions
-- medium → understanding and comparison
-- hard → analytical and tricky questions
+- easy → understanding and comparison
+- medium → analytical and tricky questions
+- hard → very detailed analytical and tricky questions
 
 STRICT VALIDATION RULES:
 - No additional properties anywhere in JSON.
@@ -55,7 +64,6 @@ STRICT VALIDATION RULES:
 - Must be valid JSON.
 
 FAILURE CONDITIONS (MUST AVOID):
-- Any extra root fields (like generatedAt, quizzes, totalChunks)
 - Invalid JSON formatting
 - English text in output
 - Missing required fields

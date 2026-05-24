@@ -34,7 +34,7 @@ async function run() {
 
   const fullContent = chunks.map((c) => c.text).join("\n\n");
 
-  const quiz = await generateQuiz(fullContent, 10, "medium");
+  const quiz = await generateQuiz(fullContent, 10, "hard");
 
   const finalQuiz = fixQuiz(quiz.object);
 
