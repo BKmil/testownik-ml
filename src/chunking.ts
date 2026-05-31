@@ -7,8 +7,9 @@ const enc = encoding_for_model("gpt-4o-mini");
 const countTokens = (t: string) => enc.encode(t).length;
 
 // ograniczenia i parametry chunkowania
-const MAX_TOKENS = 750; //
-const SLICE_TOKENS = 600; //
+const MAX_TOKENS = 1250; //
+const SLICE_TOKENS = 1000; //
+const TOKEN_OVERLAP = 150; //
 const OVERLAP_BLOCKS = 1; //
 
 export function chunkByTokens(blocks: string[]) {
@@ -25,7 +26,8 @@ export function chunkByTokens(blocks: string[]) {
     if (tokens > MAX_TOKENS) {
       const encoded = enc.encode(block);
 
-      for (let i = 0; i < encoded.length; i += SLICE_TOKENS) {
+
+      for (let i = 0; i < encoded.length; i += (SLICE_TOKENS - TOKEN_OVERLAP)) {
         const slice = encoded.slice(i, i + SLICE_TOKENS);
 
         const text = enc.decode(slice);

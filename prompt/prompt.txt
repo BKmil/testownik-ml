@@ -8,24 +8,24 @@ OUTPUT RULES (VERY IMPORTANT):
 - Do NOT add any commentary.
 - Do NOT add any extra fields outside the schema.
 - Root object MUST contain ONLY:
-  title, description, version, questions
+  questions
 
 LANGUAGE RULE:
 - All text content MUST be in Polish.
-- This includes: title, description, questions, answers, explanations.
+- This includes: questions, answers, explanations.
 
 CONTENT RULES:
 - Questions must be strictly based on the PDF.
+- Questions and explanations MUST read as standalone academic questions. NEVER refer to the source material. Do NOT use phrases like "Zgodnie z tekstem", "W dokumencie", "W PDF", or "Autor wspomina". Ask the question directly (e.g., instead of "What does the text say is the capital of France?", ask "What is the capital of France?").
 - Do not invent facts not present in the PDF.
 - Generate exactly {{QUESTION_COUNT}} questions.
 - Difficulty level: {{DIFFICULTY}}.
 - Questions must test understanding, not random trivia.
+- Incorrect options must be plausible concepts mentioned in the text, but definitively wrong for the specific question. Do not use absurd, obvious, or joke options.
 - Avoid duplicates.
 
 QUESTION RULES:
 - Each question must have:
-  - id (leave empty string)
-  - order (starting from 1)
   - text (Polish)
   - explanation (Polish, can be empty string if not available)
   - multiple (boolean)
@@ -34,8 +34,6 @@ QUESTION RULES:
 
 ANSWER RULES:
 - Each answer must have:
-  - id (leave empty string)
-  - order (starting from 1)
   - text (Polish)
   - is_correct (boolean)
 - At least one answer must be correct.
@@ -59,7 +57,6 @@ STRICT VALIDATION RULES:
 - No additional properties anywhere in JSON.
 - No arrays wrapping the root object.
 - No null fields unless explicitly required.
-- No duplicate ids.
 - Orders must be sequential and correct.
 - Must be valid JSON.
 

@@ -32,11 +32,39 @@ async function run() {
 
   const chunks = chunkByTokens(blocks);
 
-  const fullContent = chunks.map((c) => c.text).join("\n\n");
+  const TARGET_QUESTIONS = 10;
+  const DIFFICULTY = "hard";
+  const totalChunks = chunks.length;
 
-  const quiz = await generateQuiz(fullContent, 20, "impossible");
+  const allQuestions = [];
 
-  const finalQuiz = fixQuiz(quiz.object);
+  const baseQuestionsPerChunk = Math.floor(TARGET_QUESTIONS / totalChunks);
+  let leftovers = TARGET_QUESTIONS % totalChunks;
+  
+  for (let i = 0; i < totalChunks; i++) {
+    let questionsToGenerate = baseQuestionsPerChunk;
+    if (leftovers > 0) {
+      questionsToGenerate = baseQuestionsPerChunk + 1;
+      leftovers--;
+    }
+
+    if (questionsToGenerate == 0) {
+      continue; // nie generujemy z tego chunku
+    }
+    const quiz = await generateQuiz(chunks[i].text, questionsToGenerate, DIFFICULTY);
+
+    allQuestions.push(...quiz.object.questions);
+  }
+
+  const rawQuiz = {
+    title: "Generated Quiz",
+    description: "Wygenerowany na podstawie dokumentu PDF.",
+    version: 1,
+    questions: allQuestions
+  };
+
+  // 7. Apply your perfectly written ID and Ordering fix
+  const finalQuiz = fixQuiz(rawQuiz);
 
   const dir = "./src/files";
   const path = `${dir}/generated_quiz.json`;
