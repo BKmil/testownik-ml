@@ -2,7 +2,7 @@ import os
 import json
 from uuid import uuid4
 
-from pdf_reading import read_pdf
+from pdf_reading import read_pdf, check_file_size
 from chunking import chunk_by_tokens
 from quiz_generation import generate_quiz
 
@@ -30,8 +30,13 @@ def fix_quiz(quiz: dict) -> dict:
 
 
 def run():
+    file_path = "./src/files/test2.pdf"
+
+    # pdf size check
+    check_file_size(file_path)
+
     # PDF -> text
-    text = read_pdf("./src/files/test2.pdf")
+    text = read_pdf(file_path)
 
     # cleanup + split
     blocks = [
