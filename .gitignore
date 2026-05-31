@@ -175,6 +175,11 @@ ehthumbs_vista.db
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
+__pycache__/
+*.py[cod]
+*$py.class
+*/__pycache__/
+*/__pycache__
 
 # Windows Installer files
 *.cab
