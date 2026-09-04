@@ -2,7 +2,7 @@ import os
 import json
 from uuid import uuid4
 
-from pdf_reading import read_pdf
+from pdf_reading import read_pdf, check_file_size
 from chunking import chunk_by_tokens
 from quiz_generation import generate_quiz
 
@@ -30,8 +30,13 @@ def fix_quiz(quiz: dict) -> dict:
 
 
 def run():
+    file_path = "./src/files/test2.pdf"
+
+    # pdf size check
+    check_file_size(file_path)
+
     # PDF -> text
-    text = read_pdf("./src/files/test2.pdf")
+    text = read_pdf(file_path)
 
     # cleanup + split
     blocks = [
@@ -43,25 +48,53 @@ def run():
     # chunking
     chunks = chunk_by_tokens(blocks)
 
-    full_content = "\n\n".join(c["text"] for c in chunks)
+    TARGET_QUESTIONS = 10
+    DIFFICULTY = "hard"
+    total_chunks = len(chunks)
 
-    # quiz generation
-    quiz = generate_quiz(full_content, 5, "hard")
+    if total_chunks == 0:
+        print("Brak treści do przetworzenia.")
+        return
 
-    # pydantic -> dict
-    quiz_dict = quiz.model_dump()
+    all_questions = []
 
-    # fix quiz
-    fixed_quiz = fix_quiz(quiz_dict)
+    base_questions_per_chunk = TARGET_QUESTIONS // total_chunks
+    leftovers = TARGET_QUESTIONS % total_chunks
 
-    # save quiz
-    dir_path = "files"
-    file_path = os.path.join(dir_path, "generated_quiz.json")
+    for i, chunk in enumerate(chunks):
+        questions_to_generate = base_questions_per_chunk
+
+        if leftovers > 0:
+            questions_to_generate += 1
+            leftovers -= 1
+
+        if questions_to_generate == 0:
+            continue
+
+        quiz = generate_quiz(chunk["text"], questions_to_generate, DIFFICULTY)
+
+        quiz_dict = quiz.model_dump() if hasattr(quiz, "model_dump") else quiz
+        questions = quiz_dict.get("questions", [])
+        all_questions.extend(questions)
+
+    raw_quiz = {
+        "title": "Generated Quiz",
+        "description": "Quiz generated from PDF content.",
+        "version": "1.0",
+        "questions": all_questions,
+    }
+
+    final_quiz = fix_quiz(raw_quiz)
+
+    dir_path = "./src/files"
+    output_path = os.path.join(dir_path, "generated_quiz.json")
 
     os.makedirs(dir_path, exist_ok=True)
 
-    with open(file_path, "w", encoding="utf-8") as f:
-        json.dump(fixed_quiz, f, ensure_ascii=False, indent=2)
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(final_quiz, f, ensure_ascii=False, indent=2)
+
+    print(f"Quiz generated and saved to {output_path}")
 
 
 if __name__ == "__main__":
